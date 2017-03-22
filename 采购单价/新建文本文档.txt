@@ -1,0 +1,47 @@
+SELECT '','',   pmm09,pmc03, pmm22,pmm42,pmn04,ima02,' ',' ',0,   SUM(pmn20*pmn31*pmm42),' ',' ',0,0  
+FROM pmm_file,pmn_file,pmc_file,ima_file  
+WHERE pmm01=pmn01 AND pmm09 = pmc_file.pmc01 
+AND pmn04 = ima_file.ima01 AND pmn16 NOT IN ('X','0','1','9') 
+AND pmm04 between TO_DATE('2011-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and TO_DATE('2017-12-31 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+AND pmn04='R53X351XF4101R' 
+GROUP BY pmm09,pmc03,pmm22,pmm42,pmn04,ima02
+
+--起始采购单价
+SELECT pmm01,pmm04,pmn31 
+FROM pmm_file,pmn_file 
+WHERE pmm01=pmn01 AND pmn16 NOT IN ('X','0','1','9') AND pmm09='171ASA' 
+AND pmn04='R53X351XF4101R'   AND pmm04<'10/01/07' 
+ORDER BY pmm04 DESC
+
+--截止采购单价
+SELECT pmn04 料号,ima02 品名, ima021 规格, pmm09 供应商, pmm04 单据日期,  min(pmn31t)--, pmm01 采购单号,pmm04 单据日期
+FROM pmm_file,pmn_file, ima_file 
+WHERE pmm01=pmn01 AND pmn16 NOT IN ('X','0','1','9') 
+--AND pmm09='110451' 
+--AND pmn04='U31427AC0A291R'
+AND pmn04=ima01
+AND pmn04 in(select column1 from table20170207)   
+AND pmm04 between TO_DATE('2012-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and TO_DATE('2012-12-31 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+group by pmn04, pmm09, ima02, ima021, pmm04--, pmm01,pmm04,pmn31t
+order by pmn04 asc
+
+
+SELECT pmn04 料号,ima02 品名, ima021 规格, pmm09 供应商, to_char(pmm04, 'YYYY') 年度, min(pmn31t) 含税单价--, pmm01 采购单号,pmm04 单据日期
+FROM hd_zn.pmm_file,hd_zn.pmn_file, hd_zn.ima_file 
+WHERE pmm01=pmn01 AND pmn16 NOT IN ('X','0','1','9') 
+--AND pmm09='110451' 
+--AND pmn04='U31427AC0A291R'
+AND pmn04=ima01
+AND pmn04 in(select column6 from table20170207)   
+AND pmm04 between TO_DATE('2012-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS') and TO_DATE('2017-12-31 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+group by pmn04, pmm09, ima02, ima021, to_char(pmm04, 'YYYY')--, pmm01,pmm04,pmn31t
+order by pmn04, to_char(pmm04, 'YYYY') asc
+
+
+
+--找出供应商>2的料号
+
+select * from rvv_file where rvv36='MAL-360023'
+
+select * from table20170207 
+select level from table20170207 connect by level<=10
